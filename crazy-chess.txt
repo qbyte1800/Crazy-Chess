@@ -1,0 +1,219 @@
+(require 2htdp/image)
+;important notes:
+;teams are white-1,2 and black-3,4
+;pieces are pawn-1 rook-2 knight-3 bishop-4 queen-5 king-6
+;place is a posn
+
+(define-struct world (alop turn board))
+
+(define-struct piece (team type place))
+
+;(make-piece 1 1 (make-posn 4 5))
+
+
+;                                                                          
+;                                                                          
+;                                                                          
+;                                                                          
+;   ;;;;;;                                          ;;;;;;              ;; 
+;    ;   ;                           ;               ;   ;               ; 
+;    ; ;    ;; ;;;   ;;;;   ;; ;;   ;;;;;            ; ;    ;; ;;    ;;; ; 
+;    ;;;     ;;     ;    ;   ;;  ;   ;               ;;;     ;;  ;  ;   ;; 
+;    ; ;     ;      ;    ;   ;   ;   ;               ; ;     ;   ;  ;    ; 
+;    ;       ;      ;    ;   ;   ;   ;               ;       ;   ;  ;    ; 
+;    ;       ;      ;    ;   ;   ;   ;   ;           ;   ;   ;   ;  ;   ;; 
+;   ;;;     ;;;;;    ;;;;   ;;; ;;;   ;;;           ;;;;;;  ;;; ;;;  ;;; ;;
+;                                                                          
+;                                                                          
+;                                                                          
+;                                                                          
+
+
+;grid
+(define grid-size 30)
+;piece-posn : piece <grid-size> -> posn
+(define (piece-posn p1)
+  (make-posn
+   (* grid-size (posn-x (piece-place p1)))
+   (* grid-size (posn-y (piece-place p1)))))
+
+;(piece-posn (make-piece 1 1 (make-posn 4 5)))
+
+;images, keep collapsed
+(define pawn .)
+(define rook .)
+(define knig .)
+(define bish .)
+(define quee .)
+(define king .)
+(define board .)
+
+
+
+;Starting positions, keep collasped
+(define start-set
+  (list
+   ;white 1 pawns 
+   (make-piece 1 1 (make-posn 3 2))
+   (make-piece 1 1 (make-posn 4 2))
+   (make-piece 1 1 (make-posn 5 2))
+   (make-piece 1 1 (make-posn 6 2))
+   (make-piece 1 1 (make-posn 7 2))
+   (make-piece 1 1 (make-posn 8 2))
+   (make-piece 1 1 (make-posn 9 2))
+   (make-piece 1 1 (make-posn 10 2))
+   ;white 1 special
+   (make-piece 1 2 (make-posn 3 1))
+   (make-piece 1 3 (make-posn 4 1))
+   (make-piece 1 4 (make-posn 5 1))
+   (make-piece 1 6 (make-posn 6 1))
+   (make-piece 1 5 (make-posn 7 1))
+   (make-piece 1 4 (make-posn 8 1))
+   (make-piece 1 3 (make-posn 9 1))
+   (make-piece 1 2 (make-posn 10 1))
+   ;white 2 pawns 
+   (make-piece 2 1 (make-posn 3 11))
+   (make-piece 2 1 (make-posn 4 11))
+   (make-piece 2 1 (make-posn 5 11))
+   (make-piece 2 1 (make-posn 6 11))
+   (make-piece 2 1 (make-posn 7 11))
+   (make-piece 2 1 (make-posn 8 11))
+   (make-piece 2 1 (make-posn 9 11))
+   (make-piece 2 1 (make-posn 10 11))
+   ;white 2 special
+   (make-piece 2 2 (make-posn 3 12))
+   (make-piece 2 3 (make-posn 4 12))
+   (make-piece 2 4 (make-posn 5 12))
+   (make-piece 2 5 (make-posn 6 12))
+   (make-piece 2 6 (make-posn 7 12))
+   (make-piece 2 4 (make-posn 8 12))
+   (make-piece 2 3 (make-posn 9 12))
+   (make-piece 2 2 (make-posn 10 12))
+   ;black 3 pawns 
+   (make-piece 3 1 (make-posn 2 3))
+   (make-piece 3 1 (make-posn 2 4))
+   (make-piece 3 1 (make-posn 2 5))
+   (make-piece 3 1 (make-posn 2 6))
+   (make-piece 3 1 (make-posn 2 7))
+   (make-piece 3 1 (make-posn 2 8))
+   (make-piece 3 1 (make-posn 2 9))
+   (make-piece 3 1 (make-posn 2 10))
+   ;black 3 special
+   (make-piece 3 2 (make-posn 1 3))
+   (make-piece 3 3 (make-posn 1 4))
+   (make-piece 3 4 (make-posn 1 5))
+   (make-piece 3 5 (make-posn 1 6))
+   (make-piece 3 6 (make-posn 1 7))
+   (make-piece 3 4 (make-posn 1 8))
+   (make-piece 3 3 (make-posn 1 9))
+   (make-piece 3 2 (make-posn 1 10))
+   ;black 4 pawns 
+   (make-piece 4 1 (make-posn 11 3))
+   (make-piece 4 1 (make-posn 11 4))
+   (make-piece 4 1 (make-posn 11 5))
+   (make-piece 4 1 (make-posn 11 6))
+   (make-piece 4 1 (make-posn 11 7))
+   (make-piece 4 1 (make-posn 11 8))
+   (make-piece 4 1 (make-posn 11 9))
+   (make-piece 4 1 (make-posn 11 10))
+   ;black 4 special
+   (make-piece 4 2 (make-posn 12 3))
+   (make-piece 4 3 (make-posn 12 4))
+   (make-piece 4 4 (make-posn 12 5))
+   (make-piece 4 6 (make-posn 12 6))
+   (make-piece 4 5 (make-posn 12 7))
+   (make-piece 4 4 (make-posn 12 8))
+   (make-piece 4 3 (make-posn 12 9))
+   (make-piece 4 2 (make-posn 12 10))))
+
+
+;piece-pic: num -> image
+(define (piece-pic p1)
+  (cond
+    [(or
+      (= (piece-team p1) 1)
+      (= (piece-team p1) 2))
+     (cond
+       [(= (piece-type p1) 1) pawn]
+       [(= (piece-type p1) 2) rook]
+       [(= (piece-type p1) 3) knig]
+       [(= (piece-type p1) 4) bish]
+       [(= (piece-type p1) 5) quee]
+       [(= (piece-type p1) 6) king])]
+    
+    [(or
+      (= (piece-team p1) 3)
+      (= (piece-team p1) 4))
+     (cond
+       [(= (piece-type p1) 1) pawn]
+       [(= (piece-type p1) 2) rook]
+       [(= (piece-type p1) 3) knig]
+       [(= (piece-type p1) 4) bish]
+       [(= (piece-type p1) 5) quee]
+       [(= (piece-type p1) 6) king])]))
+
+;place-piece: piece scene -> scene
+(define (place-piece p1 board)
+  (place-image 
+   (piece-pic p1)
+   (posn-x (piece-posn p1))
+   (posn-y (piece-posn p1))
+   board))
+
+;(place-piece (make-piece 1 3 (make-posn 4 4)) (empty-scene 300 300))
+
+;place-all: alop scene <pieces1-6> -> scene
+(define (place-all alop place)
+  (cond
+    [(empty? alop) place]
+    [else
+     (place-all (rest alop) (place-piece (first alop) place))]))
+
+;(place-all start-set (empty-scene 390 390))
+
+
+;                                                                  
+;                                                                  
+;                                                                  
+;                                                                  
+;   ;;;;;                   ;;              ;;;;;;              ;; 
+;    ;   ;                   ;               ;   ;               ; 
+;    ;   ;   ;;;;    ;;; ;   ; ;;;;          ; ;    ;; ;;    ;;; ; 
+;    ;;;;   ;    ;  ;   ;;   ;  ;            ;;;     ;;  ;  ;   ;; 
+;    ;   ;   ;;;;;  ;        ;;;             ; ;     ;   ;  ;    ; 
+;    ;   ;  ;    ;  ;        ; ;             ;       ;   ;  ;    ; 
+;    ;   ;  ;   ;;  ;    ;   ;  ;            ;   ;   ;   ;  ;   ;; 
+;   ;;;;;    ;;; ;;  ;;;;   ;;  ;;;         ;;;;;;  ;;; ;;;  ;;; ;;
+;                                                                  
+;                                                                  
+;                                                                  
+;                                                                  
+
+;Command is 8 digits long, first is departure posn-x, second is departure posn-y, third is arival posn-x, fourth is arival posn-y  
+
+;move: world command-num -> world
+(define (move world command)
+  (local
+    ((define p1 (locate-piece start-set (floor (/ command 1000000)) (- (floor (/ command 10000)) (* 100 (floor (/ command 1000000))))))
+     (define p2 (locate-piece start-set (floor (/ command 100)) (- (floor (/ command 1)) (* 100 (floor (/ command 100))))))
+  (make-world 
+   (list p1
+   (cond
+     [(= (world-turn world) 1) 2]
+     [(= (world-turn world) 2) 1])
+
+
+
+
+
+
+(define (locate-piece alop gridx gridy)
+  (cond
+    [(empty? alop) 'Error-locate-piece]
+    [(and
+      (= (posn-x (piece-place (first alop))) gridx)
+      (= (posn-y (piece-place (first alop))) gridy)) 
+     (first alop)]
+    [else (locate-piece (rest alop) gridx gridy)]))
+
+;(locate-piece start-set (floor (/ 12061234 1000000)) (- (floor (/ 12061234 10000)) (* 100 (floor (/ 12061234 1000000)))))
