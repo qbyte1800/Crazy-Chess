@@ -1,1 +1,21 @@
 This program is not ready for useage.
+This is made in Dr. Racket (a newer version of Dr. Scheme), a derivitive of Lisp.
+To run this program (once it is ready), you must just download everything, and then open up Crazy-Chess.rkt in Dr.Racket, and click 'run' in the top left corner of the screen.
+
+Rules of the game to be:
+All pieces move the same way as in orthodox chess
+Every turn the player may chose to move 1 piece and one piece only per turn
+Players may chose where to place their pieces one the starting blocks.
+The goal of the game is to have both enemy teams defeated
+The pawns cannot attack over the far corners of the board (C3, C10, K3, KI10), where the red dot is.
+Defeat rules:
+  A) Once a king is checkmated, the king's team is defeated
+	B) When a team is defeated, the pieces stay were they are, cannot be moved, and can only be removed by the opposing team taking the pieces, by landing on them
+	C) However, the king is removed from the chessboard when a team is captured
+	D) Even though they may not move, defeated pieces still can be used to block the king's movement (eg. if there is a tower guarding all of row 6, the king may not go onto row 6)
+
+
+
+Credits:
+Qbyte 1800
+Dr. Racket
